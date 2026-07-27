@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal de Herramientas — Ingeniería de Procesos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #12161B;
+    --panel: #1A2028;
+    --panel-2: #1F262F;
+    --line: #2B3540;
+    --line-soft: #232B34;
+    --text: #E7EBEF;
+    --text-dim: #8D98A3;
+    --text-faint: #5C6773;
+    --amber: #E8A33D;
+    --amber-dim: #6B4E22;
+    --green: #4FAE7B;
+    --green-dim: #24493A;
+    --radius: 10px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body{
+    min-height: 100vh;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+  }
+
+  .wrap{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+
+  /* ---------- Header: estilo encabezado de documento controlado ---------- */
+  .doc-header{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+
+  .doc-header-top{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 28px 28px 24px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--amber);
+    margin: 0 0 10px;
+    text-transform: uppercase;
+  }
+
+  h1{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 1.25;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .status-chip{
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    background: var(--green-dim);
+    border: 1px solid rgba(79,174,123,0.35);
+    border-radius: 999px;
+    padding: 6px 12px 6px 10px;
+    white-space: nowrap;
+  }
+
+  .dot{
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px rgba(79,174,123,0.18);
+  }
+
+  .doc-meta{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+
+  .doc-meta div{
+    padding: 14px 20px;
+    border-right: 1px solid var(--line);
+  }
+
+  .doc-meta div:last-child{ border-right: none; }
+
+  .doc-meta .k{
+    color: var(--text-faint);
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+
+  .doc-meta .v{ color: var(--text-dim); }
+
+  /* ---------- Sección de estaciones ---------- */
+  .section-label{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+
+  .section-label::after{
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  /* Tarjeta estilo "orden de trabajo" con esquina troquelada */
+  .card{
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+  }
+
+  .card.is-active:hover{
+    border-color: var(--amber);
+    background: var(--panel-2);
+    transform: translateY(-2px);
+  }
+
+  .card.is-pending{
+    border-style: dashed;
+    opacity: 0.75;
+  }
+
+  .card-top{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-code{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+  }
+
+  .card-status{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .card-status.active{ color: var(--green); }
+  .card-status.pending{ color: var(--amber); }
+
+  .card-status .dot.pending{
+    background: var(--amber);
+    box-shadow: 0 0 0 3px rgba(232,163,61,0.18);
+  }
+
+  .card h2{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 19px;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .card p{
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    margin: 0;
+    flex: 1;
+  }
+
+  .card-cta{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--amber);
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    margin-top: 4px;
+  }
+
+  .card.is-pending .card-cta{ color: var(--text-faint); }
+
+  .card-cta svg{ transition: transform 0.15s ease; }
+  .card.is-active:hover .card-cta svg{ transform: translateX(3px); }
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line-soft);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media (max-width: 560px){
+    .doc-meta{ grid-template-columns: repeat(2, 1fr); }
+    .doc-meta div:nth-child(2){ border-right: none; }
+    .doc-header-top{ flex-direction: column; }
+    h1{ font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="doc-header">
+      <div class="doc-header-top">
+        <div>
+          <p class="eyebrow">Ingeniería de Procesos</p>
+          <h1>Portal de Herramientas</h1>
+        </div>
+        <div class="status-chip"><span class="dot"></span>2 de 3 activas</div>
+      </div>
+      <div class="doc-meta">
+        <div><div class="k">Doc. No.</div><div class="v">PORT-001</div></div>
+        <div><div class="k">Rev.</div><div class="v">A</div></div>
+        <div><div class="k">Área</div><div class="v">PE / PFA</div></div>
+        <div><div class="k">Actualizado</div><div class="v">Jul 2026</div></div>
+      </div>
+    </div>
+
+    <p class="section-label">Estaciones disponibles</p>
+
+    <div class="grid">
+
+      <a class="card is-active" href="https://recendezmariana-debug.github.io/Cambios-modelo-/" target="_blank" rel="noopener">
+        <div class="card-top">
+          <span class="card-code">EST-01</span>
+          <span class="card-status active"><span class="dot"></span>Activa</span>
+        </div>
+        <h2>Cambio de modelo</h2>
+        <p>Registro y seguimiento de cambios de modelo en línea de ensamble.</p>
+        <div class="card-cta">
+          Abrir herramienta
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </div>
+      </a>
+
+      <a class="card is-active" href="https://model-change-loss-time.pages.dev/registro" target="_blank" rel="noopener">
+        <div class="card-top">
+          <span class="card-code">EST-02</span>
+          <span class="card-status active"><span class="dot"></span>Activa</span>
+        </div>
+        <h2>Preparación de layouts</h2>
+        <p>Registro de tiempos y checklist para la preparación de layout de línea.</p>
+        <div class="card-cta">
+          Abrir herramienta
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </div>
+      </a>
+
+      <div class="card is-pending">
+        <div class="card-top">
+          <span class="card-code">EST-03</span>
+          <span class="card-status pending"><span class="dot pending"></span>Pendiente</span>
+        </div>
+        <h2>Tercera herramienta</h2>
+        <p>Agrega aquí el enlace de tu tercera aplicación. Busca "EST-03" en el código para editarlo.</p>
+        <div class="card-cta">Sin enlace configurado</div>
+      </div>
+
+    </div>
+
+    <footer>
+      <span>Portal interno de herramientas</span>
+      <span>Generado con Claude</span>
+    </footer>
+
+  </div>
+</body>
+</html>
